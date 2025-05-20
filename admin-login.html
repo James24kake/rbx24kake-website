@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | 24k_Ake Rewards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: #222;
+      padding: 32px 28px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+    }
+    .login-container h2 {
+      margin-bottom: 18px;
+      color: #FFC107;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      background: #FFC107;
+      color: #111;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+    .login-container button:hover {
+      background: #FFD54F;
+    }
+    .error-message {
+      color: #F44336;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2><i class="fas fa-crown"></i> Admin Login</h2>
+    <form id="adminLoginForm">
+      <input type="email" id="email" placeholder="Admin Email" required autocomplete="username">
+      <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">Login</button>
+    </form>
+    <div class="error-message" id="errorMsg"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = 'https://sikwknhwosbuqvrffbdm.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpa3drbmh3b3NidXF2cmZmYmRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2OTAzNDYsImV4cCI6MjA2MzI2NjM0Nn0.3rh1d8K1OABbLfOsv74MmDxY7dvNDfXxtkTzze4MdsY';
+    const ADMIN_UID = 'fd3c62b1-2997-47fc-8d35-75ebe6d518f4'; // Your admin UID
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.textContent = '';
+      
+      // Sign in with Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        errorMsg.textContent = error.message || 'Login failed. Please try again.';
+        return;
+      }
+      // Check if user is admin
+      const { user } = data;
+      if (user && user.id === ADMIN_UID) {
+        // Success! Redirect to dashboard
+        window.location.href = 'dashboard.html';
+      } else {
+        errorMsg.textContent = 'Access denied. You are not the admin.';
+        await supabase.auth.signOut();
+      }
+    });
+  </script>
+</body>
+</html> 
